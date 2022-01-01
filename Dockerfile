@@ -1,9 +1,6 @@
 # Buildstage
 FROM ubuntu:20:04 as buildstage
 
-# set NZBGET version
-ARG NZBGET_RELEASE
-
 RUN \
   echo "**** install build packages ****" && \
   apt update && apt install -y \
@@ -57,10 +54,7 @@ RUN \
 FROM ubuntu:20.04
 
 # set version label
-ARG BUILD_DATE
-ARG VERSION
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-LABEL maintainer="thelamer"
+
 
 RUN \
   echo "**** install build packages ****" && \
