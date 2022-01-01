@@ -1,12 +1,12 @@
 # Buildstage
-FROM ghcr.io/linuxserver/baseimage-alpine:3.14 as buildstage
+FROM ubuntu:20:04 as buildstage
 
 # set NZBGET version
 ARG NZBGET_RELEASE
 
 RUN \
   echo "**** install build packages ****" && \
-  apk add \
+  apt update && apt install -y \
     curl \
     g++ \
     gcc \
@@ -54,7 +54,7 @@ RUN \
     "https://curl.haxx.se/ca/cacert.pem"
 
 # Runtime Stage
-FROM ghcr.io/linuxserver/baseimage-alpine:3.14
+FROM ubuntu:20.04
 
 # set version label
 ARG BUILD_DATE
@@ -64,7 +64,7 @@ LABEL maintainer="thelamer"
 
 RUN \
   echo "**** install build packages ****" && \
-  apk add --no-cache --upgrade --virtual=build-dependencies \
+  apt update && apt install -y \
     cargo \
     g++ \
     libc-dev \
@@ -75,7 +75,7 @@ RUN \
     openssl-dev \
     python3-dev && \
   echo "**** install packages ****" && \
-  apk add --no-cache \
+  apt install -y \
     curl \
     libxml2 \
     libxslt \
@@ -95,14 +95,6 @@ RUN \
     pynzbget \
     rarfile && \
   ln -s /usr/bin/python3 /usr/bin/python && \
-  echo "**** cleanup ****" && \
-  apk del --purge \
-    build-dependencies && \
-  rm -rf \
-    /root/.cache \
-    /root/.cargo \
-    /tmp/*
-
 # add local files and files from buildstage
 COPY --from=buildstage /app/nzbget /app/nzbget
 COPY root/ /
